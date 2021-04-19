@@ -6,10 +6,10 @@ make
 ## mount or unmount module
 ```
 # mount
-sudo insmod ./hello.ko && sudo chmod 666 /dev/LED_0
+sudo insmod ./hx711.ko && sudo chmod 666 /dev/HX711
 
 # unmount
-sudo rmmod hello
+sudo rmmod hx711
 ```
 ## control led
 ```
