@@ -7,22 +7,26 @@
 #include <linux/module.h>
 
 #define MSG(format, arg...) printk(KERN_INFO "moon: " format "\n", ##arg)
-#define PIN_PD_SCK 27
-#define PIN_DOUT 17
-#define DATA_READY_DELAY_NS 250
+#define PIN_PD_SCK 17
+#define PIN_DOUT 27
+#define DATA_READY_DELAY_NS 1  // 1000000000/1500000=666
 #define DEV_NAME "HX711"
 static dev_t devno;
 static struct cdev *hx711_cdev;
 static struct class *hx711_class;
 
 static int hx711_cycle(void) {
-  unsigned long flags;
-  local_irq_save(flags);
+  // unsigned long flags;
+  // local_irq_save(flags);
+  int i = 0;
+  for (i = 0; i < 4; ++i) {
+    continue;
+  }
   gpio_set_value(PIN_PD_SCK, 1);
-  ndelay(DATA_READY_DELAY_NS);
+  udelay(DATA_READY_DELAY_NS);
   gpio_set_value(PIN_PD_SCK, 0);
-  local_irq_restore(flags);
-  ndelay(DATA_READY_DELAY_NS);
+  // local_irq_restore(flags);
+  udelay(DATA_READY_DELAY_NS);
   return gpio_get_value(PIN_DOUT);
 }
 
@@ -38,31 +42,34 @@ static ssize_t device_read(struct file *filp, char __user *buf, size_t count,
                            loff_t *ppos) {
   int i, ret, j, sum;
   int value = 0;
-  if (gpio_get_value(PIN_DOUT)) {
-    MSG("not ready!");
-  } else {
-    MSG("---start---");
-    sum = 0;
-    for (i = 0; i < 10; i++) {
-      value = 0;
-      while (!gpio_get_value(PIN_DOUT))
-        ;
-      for (j = 0; j < 24; j++) {
-        value <<= 1;
-        ret = hx711_cycle();
-        if (ret) value++;
-      }
-      // value = (value & (1L << 23) ? value | ((-1L) << 24) : value);
-      // value ^= 0x800000;
-      hx711_cycle();
-      MSG("value: %d ", value);
-      sum += value;
-      mdelay(100);
+  // if (gpio_get_value(PIN_DOUT)) {
+  //   MSG("not ready!");
+  //   retunr 0;
+  // } else {
+  MSG("---start---");
+  sum = 0;
+  for (i = 0; i < 10; i++) {
+    value = 0;
+    while (gpio_get_value(PIN_DOUT))
+      ;
+    for (j = 0; j < 24; j++) {
+      value <<= 1;
+      ret = hx711_cycle();
+      if (ret) value++;
     }
-    MSG("AVG: %d ", sum / 10);
-    MSG("--- end ---");
+    // value = (value & (1L << 23) ? value | ((-1L) << 24) : value);
+    // value ^= 0x800000;
+    hx711_cycle();
+    MSG("value: %d ", value);
+    sum += value;
+    ndelay(100);
   }
-  return 0;
+  sum = sum / 10;
+  MSG("AVG: %d ", sum);
+  MSG("--- end ---");
+  copy_to_user(buf, &sum, sizeof(int));
+  return sizeof(int);
+  // }
 }
 
 static struct file_operations fops = {
@@ -116,6 +123,11 @@ int device_init(void) {
   if (device_create(hx711_class, NULL, devno, NULL, DEV_NAME) == NULL) {
     MSG("device_create failed");
   }
+  // reset
+  gpio_set_value(PIN_PD_SCK, 1);
+  udelay(60);
+  gpio_set_value(PIN_PD_SCK, 0);
+  udelay(60);
   return 0;
 }
 
