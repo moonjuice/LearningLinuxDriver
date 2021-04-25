@@ -24,9 +24,3 @@ cat /dev/LED_0
 ```
 dmesg | grep moon
 ```
-
-## User Application
-```
-* gcc -o read_hx711 read_hx711.c
-* ./read_hx711
-```

@@ -40,6 +40,7 @@ static int device_release(struct inode *inode, struct file *filp) {
 }
 static ssize_t device_read(struct file *filp, char __user *buf, size_t count,
                            loff_t *ppos) {
+  if (*ppos) return 0;
   int i, ret, j, sum;
   int value = 0;
   // if (gpio_get_value(PIN_DOUT)) {
@@ -67,8 +68,12 @@ static ssize_t device_read(struct file *filp, char __user *buf, size_t count,
   sum = sum / 10;
   MSG("AVG: %d ", sum);
   MSG("--- end ---");
-  copy_to_user(buf, &sum, sizeof(int));
-  return sizeof(int);
+  char result_str[7];
+  snprintf(result_str, 7, "%d", sum);
+  result_str[6] = '\0';
+  copy_to_user(buf, result_str, sizeof(result_str));
+  *ppos += sizeof(result_str);
+  return sizeof(result_str);
   // }
 }
 
