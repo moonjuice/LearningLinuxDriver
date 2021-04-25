@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Electronic Balance</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <style>
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 96vh;
+            border: 3px solid green;
+            font-size: xx-large;
+        }
+    </style>
+</head>
+
+<body style="background: white;">
+    <div class="center"><span id="weight"></span> g</div>
+</body>
+<script type="text/javascript">
+    window.api.receive("fromMain", (data) => {
+        const element = document.getElementById('weight')
+        if (element) element.innerText = data
+    })
+</script>
+
+</html>

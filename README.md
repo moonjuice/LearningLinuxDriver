@@ -24,3 +24,12 @@ cat /dev/LED_0
 ```
 dmesg | grep moon
 ```
+## Desktop App
+```
+cd DesktopApp
+# before start application
+npm install
+
+# start application
+npm start
+```
