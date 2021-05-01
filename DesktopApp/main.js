@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
 const { Worker } = require('worker_threads');
+//const worker2 = new Worker(path.resolve('./ble.js'));
 
 let mainWindow;
 function createWindow() {
@@ -11,29 +12,28 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegrationInWorker: true
         }
-    })
-
-    mainWindow.loadFile('index.html')
+    });
+    mainWindow.loadFile('index.html');
 }
 
 app.whenReady().then(() => {
-    createWindow()
-
+    createWindow();
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow()
+            createWindow();
         }
-    })
+    });
 
     const worker1 = new Worker(path.resolve('./readHX711.js'));
     worker1.on('message', (message) => {
         console.log('main thread get message', message);
-        mainWindow.webContents.send('fromMain', message)
+        mainWindow.webContents.send('fromMain', message);
+        //worker2.postMessage(message);
     });
-})
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        app.quit();
     }
-})
+});

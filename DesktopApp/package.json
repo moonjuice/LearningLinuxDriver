@@ -5,12 +5,18 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "rebuild": "electron-rebuild -f -w bleno"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^12.0.5"
+    "electron": "^12.0.5",
+    "electron-rebuild": "^2.3.5"
+  },
+  "dependencies": {
+    "electron": "^12.0.5",
+    "bleno": "npm:@abandonware/bleno@^0.5.1-4"
   }
 }
