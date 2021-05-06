@@ -6,7 +6,7 @@ make
 ## mount or unmount module
 ```
 # mount
-sudo insmod ./hx711.ko && sudo chmod 666 /dev/HX711
+sudo insmod ./hx711.ko && sudo chmod 666 /dev/HX711 && sudo chmod 666 /dev/HX711_OFFSET
 
 # unmount
 sudo rmmod hx711
